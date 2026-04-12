@@ -1,5 +1,5 @@
 metadata:
-  logo: "/assets/booyaka.png"
+  logo: "/assets/supranim.png"
   title: "Supranim Documentation"
   description: "Documentation for Supranim, the modern Web framework for building web applications with Nim lang"
   keywords: ["supranim", "nim", "web framework", "documentation", "framework", "booyaka docs"]
@@ -70,6 +70,9 @@ sidebar_navigation:
       - title: "Starter Kits"
         url: "/starter-kits"
 
+      - title: "Supra CLI"
+        url: "/supra"
+
       - title: "Deployment"
         url: "/deployment"
 
@@ -116,8 +119,10 @@ sidebar_navigation:
         url: "/database/migrations"
 
       - title: "Query Builder"
-        url: "/database/query-builder"
+        url: "/database/queries"
 
+      - title: "Collection"
+        url: "/database/collection"
 
 extra_sections:
   left_sidebar:

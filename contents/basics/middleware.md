@@ -11,7 +11,7 @@ Middleware files are located in the `/service/middleware` directory, and they ar
 You can create a new middleware by using the `newMiddleware` macro. Inside the middleware use `next()` to continue to the next middleware or route handler, and `abort()` to stop the request and optionally redirect to another page.
 
 Here is an example:
-```
+```nim
 import supranim/middleware
 
 var isAuthenticated = false
@@ -26,14 +26,14 @@ newMiddleware authenticate:
 
 ### Attach Middleware to Routes
 To attach a middleware to a route, you can use a pragma expression. For example to attach the `authenticate` middleware to `/account` route:
-```
+```nim
 get "/account" {.middleware: [authenticate].}
   # GET route links to `getAccount` controller
   # and is protected by the `authenticate` middleware
 ```
 
 This will ensure that the `authenticate` middleware runs before the route handler for `/account`, allowing you to perform authentication checks or other logic before processing the request. Sure, you can attach multiple middleware to a route by listing them in the `middleware` pragma:
-```
+```nim
 get "/account" {.middleware: [authenticate, anotherMiddleware].}
 ```
 
@@ -41,7 +41,7 @@ get "/account" {.middleware: [authenticate, anotherMiddleware].}
 The `baseMiddleware` is a special middleware that runs before all other middleware and route handlers. It is useful for tasks that need to be performed on every request, such as logging, setting headers, or handling CORS.
 
 One example is to implement a base middleware that checks for a trailing slash in the URI and redirects to the correct URL if necessary:
-```
+```nim
 import supranim/middleware
 
 newBaseMiddleware uriChecker:

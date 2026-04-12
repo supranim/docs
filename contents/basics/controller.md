@@ -8,13 +8,13 @@ Controllers are the heart of your application, responsible for **handling incomi
 ## Create a Controller
 You can create a new controller by using either `newController` macro, or the short-version `ctrl` template. Both serve the same purpose. Here is an example of how to create a controller using the `newController` macro:
 
-```
+```nim
 newController getHomepage:
   respond("Welcome to the homepage!")
 ```
 
 Basically, the `newController` macro will transform into the following proc
-```
+```nim
 proc getHomepage(req: var Request, res: var Response) {.gcsafe.} =
   respond("Welcome to the homepage!")
 

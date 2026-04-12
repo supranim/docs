@@ -20,7 +20,7 @@ src/
 ├── service/
 │   ├── database/
 │   │   └── migrations/
-│   │   │   └── 2024_01_01_000000_create_users_table.nim
+│   │   │   ├── 2024_01_01_000000_create_users_table.nim
 │   ├── event/
 │   ├── middleware/
 │   │   └── auth.nim
