@@ -11,7 +11,7 @@ appearance:
   show_toggle_right_sidebar: true
   container_width: "col-lg-10 mx-auto"
   content_width: "col-lg-7"
-  background_noise_opacity: 0.03
+  background_noise_opacity: 0.5
 
 git:
   enable_versioning: false
@@ -123,6 +123,20 @@ sidebar_navigation:
 
       - title: "Collection"
         url: "/database/collection"
+  
+  - name: "Service Providers"
+    items:
+      - title: "Sessions"
+        url: "/services/session"
+
+      - title: "Tasks"
+        url: "/services/tasks"
+      
+      - title: "Events & Listeners"
+        url: "/services/events"
+      
+      - title: "Http Limiter"
+        url: "/services/limiter"
 
 extra_sections:
   left_sidebar:
