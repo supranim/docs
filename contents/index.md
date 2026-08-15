@@ -1,10 +1,10 @@
 ---
 title: Introduction
-description: "This is Supranim ⚡️ A powerful and flexible full-stack framework for building modern web applications"
+description: "A full-stack web framework for Nim with routing, controllers, an ORM, templates, sessions and WebSockets."
 tags: ["introduction", "overview", "getting started"]
 ---
 
-This is Supranim &mdash; A full-stack web framework built on top of Libevent, designed to provide a fast, modern, and flexible development experience
+This is Supranim &mdash; A full-stack web framework built on top of [powpow](https://github.com/openpeeps/powpow), a 100% Nim HTTP server, designed to provide a fast, modern, and flexible development experience
 for building web applications in Nim language.
 
 <div class="alert alert-info rounded-4" role="alert">
@@ -17,7 +17,7 @@ for building web applications in Nim language.
 Let's start with a quick overview of the key features that make Supranim a great choice for building web applications: 
 
 - Fast, modern and flexible full-stack web framework
-- Built on top of **Libevent**, providing **high performance and scalability**
+- Built on top of **powpow**, a 100% Nim HTTP server, providing **high performance and scalability**
 - Built-in support for **WebSockets**, **REST APIs**, and server-side rendering
 - **Model-View-Controller** (MVC) architecture for organized and maintainable code
 - Integrated ORM for database management

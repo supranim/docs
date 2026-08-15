@@ -1,37 +1,52 @@
 ---
 title: "Other Setups & Low-level APIs"
-description: "A quick overview of core networking setups and low-level APIs available in Supranim for building custom web servers, TCP/UDP servers, and WebSocket servers."
+description: "Build custom HTTP and WebSocket servers with the low-level APIs exposed by Supranim's powpow backend."
 keywords: ["http", "server", "websocket", "tcp", "udp", "basic", "setup"]
 ---
 
 ## About
-In some cases, you may want to build a custom HTTP server without using the full features of the Supranim framework. Supranim expose core networking APIs that allow you to create HTTP servers, TCP/UDP and WebSocket servers for various use cases
+In some cases, you may want to build a custom HTTP server without using the full features of the Supranim framework. Supranim exposes core networking APIs, built on powpow, that allow you to create HTTP servers, TCP/UDP and WebSocket servers for various use cases.
 
-## Simple HTTP Server Example
+## Examples using the powpow backend
+You can skip the Supranim MVC structure and use the low-level API directly.
+
+### A simple HTTP server
 Creating a simple HTTP server looks like this:
 
 ```nim
-import std/osproc
-import pkg/supranim/network/webserver
+import std/cpuinfo
+import supranim/network/webserver
 
 var server = newWebServer()
 
 proc onRequest(req: var webserver.Request) =
-  req.resp(Http200, "All cheese is good cheese")
+  req.send(Http200, "All cheese is good cheese")
 
 server.start(onRequest, startupCallback = nil, threads = countProcessors())
 ```
 
-## WebSocket Upgrade Example
-You can tell Supranim to upgrade an incoming HTTP request to a **WebSocket connection** if it matches a certain route. For example:
+The `Request` type exposes `send(code, body)`, `sendFile`, `sendChunk` and streaming helpers for low-level responses.
+
+### WebSocket upgrade example
+You can tell Supranim to upgrade an incoming HTTP request to a **WebSocket connection** if it matches a certain route. Low-level callbacks registered with `registerCallback` receive the raw powpow `HttpRequest`/`HttpResponse` pointers:
+
 ```nim
+import pkg/powpow as pw
+import supranim/network/webserver
+
 server.registerCallback("/ws",
-  proc (req: ptr evhttp_request, arg: pointer) {.cdecl.} =
-    discard websocketUpgrade(req, onOpenCallback, nil, onClose, onError)
+  proc (req, arg: pointer) {.cdecl, gcsafe.} =
+    let req = cast[pw.HttpRequest](req)
+    let res = cast[pw.HttpResponse](arg)
+    discard pw.websocketUpgrade(res, req,
+      onOpen = proc(ws: pw.WsConnection) = echo "open!",
+      onMessage = proc(ws: pw.WsConnection, kind: pw.WsFrameKind, data: openArray[byte]) =
+        ws.sendText(cast[string](@data)),
+    )
   )
 ```
 
-## Benchmarking
+### Benchmarks Supranim + powpow
 Here you can find some stupid and unrealistic benchmarks for the above server setup:
 ```
 Running 10s test @ http://127.0.0.1:8080

@@ -1,6 +1,6 @@
 ---
 title: "License"
-description: "A detailed overview of the licensing terms for Supranim, including information on how to use, modify, and distribute the framework in compliance with its license."
+description: "Supranim is licensed under LGPL-3.0-or-later. Overview and full license text."
 ---
 
 ## License Information

@@ -1,28 +1,22 @@
 ---
 title: "Dependencies"
-description: "Discover the essential dependencies required for Supranim to function properly and ensure a smooth development experience."
+description: "The Nim packages required by Supranim, and the runtime libraries needed by the database layer."
 ---
 
 ### Nim packages and libraries
-Supranim relies on several Nim packages and libraries to provide its powerful features and functionality. Most of these dependencies are packages that I maintain and have been developed specifically for Supranim, while others are popular third-party libraries such as Libevent and Monocypher.
+Supranim relies on several Nim packages to provide its features. Most of them are maintained [@supranim](https://github.com/supranim/supranim) and [@openpeeps](https://github.com/openpeeps) organizations and are Nim-only:
 
-All in-house packages are available on GitHub, on [Supranim's GitHub org page](https://github.com/supranim), or on [OpenPeeps GitHub org page](https://github.com/openpeeps) for those pretty framework-agnostic libraries.
+- **[powpow](https://github.com/openpeeps/powpow)**: HTTP/1.1 and WebSocket server (the Supranim backend).
+- **[ozark](https://github.com/openpeeps/ozark)**: macro-based ORM with a type-safe query builder (PostgreSQL).
+- **[emitter](https://github.com/supranim/emitter)**: event emitter powering the events service.
+- **[nimcypher](https://github.com/nimbase/nimcypher)**: cryptography for `supranim/support/auth`: a pure-Nim port of Monocypher (X25519, Ed25519, XChaCha20-Poly1305, Argon2id).
+- **[kapsis](https://github.com/openpeeps/kapsis)**: CLI command parsing used by `App.cli`.
+- **[tim](https://github.com/openpeeps/tim)**: template engine.
+- Other utilities: `flysystem` (filesystem), `twofa` (QR/2FA), `openparser` (JSON/YAML/regex), `threading`, `flatty`, `mimedb`, `checksums`, `semver`.
 
-For a complete list of package dependencies, please refer to the [Nimble file](https://github.com/supranim/supranim) in the Supranim repository. Also, depending on the project type you choose when creating a new project, some additional dependencies may be required. 🔥 [Check the Starter Kits documentation](/starter-kits) for more details on the specific dependencies for each project type.
+For the complete list, see the [Nimble file](https://github.com/supranim/supranim) in the Supranim repository. Depending on the project type you choose when creating a new project, some additional dependencies may be required. 🔥 [Check the Starter Kits documentation](/starter-kits) for more details on the specific dependencies for each project type.
 
-### C Library Dependencies 
-Supranim is a web framework built on top of [Libevent notification library](https://github.com/libevent/libevent), a high-performance, well-known C library that provides asynchronous event notification. This allows Supranim to handle a large number of concurrent connections efficiently, making it ideal for building high-performance web applications.
+### No C build dependencies
+The HTTP server (powpow) and the cryptography layer (nimcypher) are implemented entirely in Nim, so Supranim itself has **no C library build dependencies**. No additional C toolchain or libraries are required to compile a Supranim application.
 
-### Building Libevent from Source
-To ensure you have the latest version of Libevent, you can build it from source. Follow these steps:
-```bash
-# Clone the LibEvent repository
-git clone https://github.com/libevent/libevent
-
-# Navigate to the libevent directory
-cd libevent && mkdir build && cd build
-cmake .. && make
-
-# Install the library globally
-sudo make install
-```
+The only exception is the database layer: the PostgreSQL/SQLite drivers

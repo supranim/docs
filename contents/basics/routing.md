@@ -1,6 +1,6 @@
 ---
 title: "Routing"
-description: "Learn about routing in web development, including how to define routes, handle requests, and manage navigation in your web applications."
+description: "Define routes, route parameters, multi-method routes, route groups, middleware and afterware."
 keywords: ["routing", "web development", "routes", "navigation", "request handling"]
 ---
 
@@ -47,9 +47,9 @@ Supported parameter types include:
 [0-9A-Za-z-_/]+
 ```
 
-`alphaSlug` matches alphabetic strings.
+`alphaSlug` matches alphabetic characters, hyphens and underscores.
 ```
-[A-Za-z]+
+[A-Za-z-_]+
 ```
 
 `uuid` matches UUID strings.
@@ -70,6 +70,11 @@ Supported parameter types include:
 `wordWithDots` matches word characters and dots.
 ```
 [\w\.]+
+```
+
+`semver` matches semantic version strings (e.g. `1.2.3`, `v2.0.0-rc1`).
+```
+v?[0-9]+(?:\.[0-9]+){1,3}(?:-[0-9A-Za-z.\-]+)?
 ```
 
 `any` matches any string.
@@ -119,3 +124,8 @@ routes:
     get "/users"
       # This route will be accessible at "/admin/users" and will also execute the `adminAuthMiddleware` before the `getAdminUsers` handler
 ```
+
+## Related
+@basics/controller.md
+
+@basics/middleware.md

@@ -1,11 +1,11 @@
 ---
 title: "Supra CLI"
-description: "This is the official CLI tool for managing your Supranim projects"
+description: "The official CLI tool for managing your Supranim projects."
 keywords: ["cli", "command line interface", "supra", "bootstrap", "project management"]
 ---
 
 Supra CLI provides a set of commands to help you manage your Supranim projects efficiently. With Supra, you can easily create
-new projects from starter kits, execute database migrations and more. This is pretty much the first version of the CLI, and I'm planning to add more features and commands in the future, so stay tuned for updates!
+new projects from starter kits and bundle static assets. This is pretty much the first version of the CLI, and I'm planning to add more features and commands in the future, so stay tuned for updates!
 
 ## Installation
 Usually, Supra CLI is automatically installed when you install Supranim for the first time. However, if you need to install it, you can always do it using Nimble:
@@ -24,20 +24,15 @@ Here are some of the available commands in Supra CLI. Type `supra -h` to see the
 ```text
 CLI tool for bootstrapping Supranim applications
   (c) Supranim | MIT License  
-  Build Version: 0.1.0
+  Build Version: 0.1.2
 
 Development
   init <project:string>                       Create a new Supranim application
         --nocache:bool
-Database Management
-  db.show                                     Show database information and table sizes
-  db.table <name:string>                      Show column information for a specific table
-  db.monitor                                  Monitor active database connections in real-time
-  db.migrate                                  Run pending migrations
-  db.rollback                                 Rollback to the previous migration batch
-        --step:int
+        --skipconfig:bool
 Asset Bundling
   bundle.assets <dir:string> <output:string>  Bundle static assets into the application
+        --skip-prefix:bool
 ```
 
 ### The asset bundler

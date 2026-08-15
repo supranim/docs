@@ -1,6 +1,6 @@
 ---
 title: "Templates"
-description: "Powerful templating system for rendering HTML views with dynamic data",
+description: "Render HTML views with the Tim template engine: layouts, partials and views.",
 tags: ["templates", "views", "rendering", "tim", "template engine"]
 ---
 
@@ -19,5 +19,5 @@ By default, Tim Engine looks for template files in the `src/templates` directory
 
 
 ## Setting up your own Template Engine
-To set up your own template engine ensure you read the [Service Providers](/concept/providers) concept, find more about [Services](/basics/services) and how to [register a service](/basics/services#registering-a-service) in the documentation.
+To set up your own template engine, read the [Service Providers](/concept/providers) concept to learn how services are registered in your application.
 

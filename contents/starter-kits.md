@@ -1,6 +1,6 @@
 ---
 title: "Starter Kits"
-description: "Explore our collection of starter kits designed to help you quickly set up and start building your Supranim applications with best practices and essential features included."
+description: "Pre-built Supranim project templates with authentication, session management and a dashboard."
 ---
 
 ## What are Starter Kits?
@@ -17,6 +17,6 @@ Check it out on GitHub: [@supranim/starterkit](https://github.com/supranim/start
 ![Supranim Starter Kit 2026](https://github.com/supranim/app/raw/main/.github/starter-screenshot.png)
 
 ## How to Use Starter Kits
-The most idiomatic way to use a starter kit is via [Supra](/cli), the CLI tool for managing Supranim projects. With Supra, you can easily **create a new project** based on a starter kit with just a few commands.
+The most idiomatic way to use a starter kit is via [Supra](/supra), the CLI tool for managing Supranim projects. With Supra, you can easily **create a new project** based on a starter kit with just a few commands.
 
 Check out the [Supra documentation](/supra) for more details on how to get started with Supra and our starter kits.

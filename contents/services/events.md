@@ -15,7 +15,7 @@ Listeners can be registered for specific events, and when an event is emitted, a
 Install the [Event Emitter](https://github.com/supranim/emitter) service by importing it into your Supranim application via Nimble, then add it to your `.nimble` file:
 
 ```
-requires "emitter >= 0.1.0"
+requires "emitter[powpow]"
 ```
 
 Once installed, you can tell Supranim to initialize the autoloaded service in your application entry point, inside the `services` block:
@@ -27,7 +27,7 @@ App.services do:
 This will initialize a Singleton instance of the Event Emitter service, which can be accessed throughout your application to define listeners and emit events.
 
 ## Defining Events and Listeners
-To define an event, you can create a new event type and register listeners for it. In Supranim, all listeners are automatically discovered at compile time, is enough to place a listener module inside the `src/service/listeners/` directory, for example:
+To define an event, you can create a new event type and register listeners for it. In Supranim, all listeners are automatically discovered at compile time, is enough to place a listener module inside the `src/service/event/listeners/` directory, for example:
 
 ```nim
 
@@ -48,7 +48,10 @@ event().emit("account.password.request", some(@["test@example.com"]))
 ```
 
 ## Standalone Usage
-This service can also be used as a standalone Nimble package in any Nim project. It is **based on the Libevent library**, which provides a robust and efficient event handling mechanism. You can find the standalone package and its documentation on GitHub: https://github.com/supranim/emitter
+This service can also be used as a standalone Nimble package in any Nim project. It provides a robust and efficient event handling mechanism. You can find the standalone package and its documentation on GitHub: https://github.com/supranim/emitter
 
 ### API Reference
 The API reference for this service: https://supranim.github.io/emitter
+
+## Related
+@services/tasks.md

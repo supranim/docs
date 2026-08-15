@@ -5,7 +5,7 @@ description: "Add middleware to your application to handle requests and response
 
 Middleware is a powerful concept in web development that allows you to intercept and modify requests and responses in your application. In this section, we will explore how to use middleware in your application to enhance functionality and improve the user experience.
 
-Middleware files are located in the `/service/middleware` directory, and they are automatically loaded by the application.
+Middleware files are located in the `src/service/middleware` directory, and they are automatically loaded by the application.
 
 ## Create a Middleware
 You can create a new middleware by using the `newMiddleware` macro. Inside the middleware use `next()` to continue to the next middleware or route handler, and `abort()` to stop the request and optionally redirect to another page.

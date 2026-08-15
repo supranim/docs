@@ -22,3 +22,16 @@ newModel User:
   updated_at: TimestampTz
 ```
 
+## Using Models in Controllers
+Using it inside a controller does not require any imports, as the model and its structure are automatically available to all controllers. You can use the model like this:
+```
+ctrl getUsers:
+  ## `GET` handler for rendering a list of users
+  withDBPool:
+    let users = Models.table(User).selectAll().where("name", "John").getAll()
+```
+
+## Next
+@database/queries.md
+
+@database/collection.md

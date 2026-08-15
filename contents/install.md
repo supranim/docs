@@ -1,11 +1,11 @@
 ---
 title: "Install Supranim"
-description: "Learn how to install Supranim, the powerful and flexible full-stack framework for building modern web applications."
+description: "How to install Supranim and the Supra CLI."
 ---
 
 <div class="alert alert-info rounded-4" role="alert">
   <div class="alert-content">
-    Supranim requires Nim version 2.0 or higher. Make sure you have the latest version of Nim installed to use Supranim.
+    Supranim requires Nim version 2.2.10 or higher. Make sure you have the latest version of Nim installed to use Supranim.
   </div>
 </div>
 
@@ -21,3 +21,8 @@ nimble install supra supranim
 
 ## Dependencies
 Also, ensure you have all the necessary dependencies installed. You can find [here a list of dependencies](/dependencies) required for Supranim to function properly.
+
+## Next steps
+@starter-kits.md
+
+@dependencies.md

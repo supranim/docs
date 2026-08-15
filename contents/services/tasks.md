@@ -16,7 +16,7 @@ The Task Scheduler service allows you to schedule and manage background tasks in
 ## Features
 - Schedule tasks to run at specific intervals (e.g., every hour, daily, weekly)
 - Manage and monitor scheduled tasks through a simple API
-- Based on Libevent for efficient event-driven task execution
+- Event-driven background task execution
 - Support for both one-time and recurring tasks
 - Threadpool-based execution for efficient task management
 
@@ -68,3 +68,6 @@ The Task Scheduler can also be used as a standalone Nimble package in any Nim pr
 
 ### API Reference
 The API reference for this service: https://supranim.github.io/tasks
+
+## Related
+@services/events.md

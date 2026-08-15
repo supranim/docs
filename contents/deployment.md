@@ -1,6 +1,6 @@
 ---
 title: "Deployment"
-description: "Helpful tips and best practices for deploying your Supranim applications to production environments, ensuring optimal performance and reliability."
+description: "Deploy Supranim applications to production: reverse proxies, SSL/TLS and release builds."
 ---
 
 ## Server Configuration

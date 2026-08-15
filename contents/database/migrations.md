@@ -1,6 +1,6 @@
 ---
 title: "Database Migrations"
-description: "Run database migrations to keep your database schema up to date with your models."
+description: "The current state of database migrations in Supranim and the plan for a built-in migration system."
 keywords: ["database migrations", "ozark", "schema updates", "orm"]
 ---
 

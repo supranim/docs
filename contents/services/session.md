@@ -24,17 +24,11 @@ The Session Manager is responsible for handling user sessions, including creatio
 ## Install this service
 Install the Session Manager service using Nimble:
 ```
-nimble install session
+nimble install supranim_session
 ```
 
-## Initialize Session Manager
-To use this service in your Supranim application, you need to initialize it in your main application file:
-
-```nim
-App.services do:
-  # other services...
-  session.init()
-```
+## Access the Session Manager
+The Session Manager is an `HttpSession` singleton, auto-discovered from `src/service/provider/`. You access it through the `session()` helper or, inside controllers and middleware, the `withSession` template. The starter kits install and wire it up for you.
 
 ## Session flows
 The Session Manager provides a `withSession` template that you can use to wrap your logic that requires session handling. This template will automatically handle
@@ -43,7 +37,7 @@ session creation, validation, and cleanup for you.
 Here, is an example of how to use the `withSession` template in a controller action:
 
 ```nim
-import ../provider/session
+import ../service/provider/session
 
 ctrl getAccount:
   ## GET handler for rendering the account screen

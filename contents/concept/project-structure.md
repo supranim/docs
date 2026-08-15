@@ -1,6 +1,6 @@
 ---
 title: "Project Structure"
-description: "Explore the organized project structure of Supranim, designed to help you navigate and understand the framework's components and architecture for efficient development."
+description: "The standard Supranim project layout: config, controllers, models, services, templates and routes."
 tags: ["project structure", "architecture", "components"]
 ---
 
@@ -11,6 +11,8 @@ Here's a simple representation of the Supranim project structure:
 
 ```
 src/
+├── app.nim
+├── routes.nim
 ├── config/
 ├── controller/
 │   ├── pages.nim
@@ -18,29 +20,31 @@ src/
 ├── model/
 │   └── user.nim
 ├── service/
-│   ├── database/
-│   │   └── migrations/
-│   │   │   ├── 2024_01_01_000000_create_users_table.nim
 │   ├── event/
 │   ├── middleware/
 │   │   └── auth.nim
 │   └── provider/
 ├── storage/
-├── views/
-│   ├── layouts/
-│   ├── partials/
-│   └── pages/
+└── templates/
+    ├── layouts/
+    ├── partials/
+    └── views/
 ```
 
 ### Configs
 The `config` directory contains configuration files for the application, such as database settings, environment variables, and other application-specific configurations. All the configuration files are represented in **YAML** format for easy readability and management.
 
-Go to the [Configs](https://supranim.com/docs/concept/configs) documentation for more details on how to define and manage your application configurations.
+Go to the [Configuration](/concept/configuration) documentation for more details on how to define and manage your application configurations.
+
+## Routes
+The `routes.nim` file is automatically included by the framework at compile time. Define your routes inside a `routes:` block here; no imports are required.
+
+Check the [Routing](/basics/routing) documentation for more details on defining routes and route parameters.
 
 ## Controller directory
 The `controller` directory contains the controller files that handle the incoming HTTP requests and return responses. Depending on the size and complexity of your application, you can organize your controllers into subdirectories for better maintainability.
 
-Check the [Controllers](https://supranim.com/docs/concept/controllers) documentation for more details on to define controllers and their actions.
+Check the [Controllers](/basics/controller) documentation for more details on to define controllers and their actions.
 
 <div class="alert alert-info rounded-4" role="alert">
   <div class="alert-content">Controller files are automatically loaded by Supranim, so you don't need to manually import them in your application.</div>

@@ -11,11 +11,12 @@ appearance:
   show_toggle_right_sidebar: true
   container_width: "col-lg-10 mx-auto"
   content_width: "col-lg-7"
-  background_noise_opacity: 0.5
+  background_noise_opacity: 0.3
 
 git:
   enable_versioning: false
   enable_contributors_info: false
+  latest_label: "main"
 
 header:
   search:
@@ -40,6 +41,10 @@ content:
   enableAutoFormatLinks: true
   bottom_navigation: true
   codeHighlightTheme: "default"
+  pageReferences: true
+  lazyloadIframes: false
+  lazyloadVideos: false
+  lazyloadImages: false
 
   share_ai_buttons: true
   share_buttons_ai_providers:
@@ -122,6 +127,9 @@ sidebar_navigation:
 
       - title: "Validation"
         url: "/basics/validation"
+
+      - title: "Backends"
+        url: "/basics/backends"
       
       - title: "Other setups"
         url: "/basics/other-setups"
@@ -153,17 +161,6 @@ sidebar_navigation:
       
       - title: "Http Limiter"
         url: "/services/limiter"
-  
-  - name: "Examples & Walkthroughs"
-    items:
-      - title: "Building a REST API"
-        url: "/examples/rest-api"
-      
-      - title: "Building a WebSocket server"
-        url: "/examples/websocket-server"
-
-      - title: "Zero-copy file transfer"
-        url: "/examples/zero-copy-file-transfer"
 
 extra_sections:
   left_sidebar:
@@ -180,6 +177,9 @@ extra_sections:
             </div>
           </div>
         </a>
+  right_sidebar:
+    - title: "On this page"
+      content: ""
 
 footer:
   text: ""
