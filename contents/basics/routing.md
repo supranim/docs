@@ -17,7 +17,7 @@ routes:
 ## Auto-linked Routes
 In Supranim, all routes are automatically linked to their coressponding handler functions based on their names. For example, a route defined as `get "/"` will automatically be linked to a handler function named `getHomepage`. This convention allows for a clean and organized way to manage your route handlers without needing to manually link them.
 
-The auto-linking mechanism uses the **HTTP method** as a prefix and a camelCase version of the route path.
+The auto-linking mechanism uses the **HTTP method** as a prefix and a **camelCase** version of the route path.
 
 ```nim
 routes:
@@ -26,7 +26,54 @@ routes:
     # where `name` is a dynamic route parameter of type `slug`
     # which is basically a regex pattern that matches URL-friendly
     # strings (e.g., `john-doe`, `my-blog-post`)
+
+  post "/account/edit/{id:id}"
+    # This route autolinks to a handler named `postAccountEditId`
 ```
+
+<div class="alert alert-info rounded-4" role="alert">
+  <div class="alert-content">
+    Currently, Supranim does not support custom regex patterns for route parameters. However, we plan to add this feature in the future to allow for even more flexibility in defining route parameters.
+  </div>
+</div>
+
+### Route multiple Methods
+You can define a common route for multiple HTTP methods, for example when you want to have the same
+route for both `GET` and `POST` requests. To do this, simply use a tuple of methods in the route definition, just like this
+
+```nim
+routes:
+  (get, post) -> "/edit/{id:id}"
+    # This route autolinks to two handlers: `getEditId` and `postEditId`
+    # where `id` is a dynamic route parameter of type `id`
+    # which matches numeric strings (e.g., "123", "456")
+```
+
+### Middleware & Afterware
+In addition to defining routes, you can also use the `middleware` and `afterware` pragmas to specify functions that should be executed before or after the route handler, respectively. This allows you to easily manage tasks such as authentication, logging, or response modification in a clean and organized way.
+
+```nim
+routes:
+  get "/dashboard" {.middleware: [authMiddleware].}
+    # This route will execute the `authMiddleware` function before the `getDashboard` handler
+
+  get "/profile" {.afterware: [logAfterware].}
+    # This route will execute the `logAfterware` function after the `getProfile` handler
+```
+
+### Route Groups
+Supranim also supports route groups, which allow you to group related routes together under a common path prefix. This is useful for organizing your routes and applying common middleware or afterware to a group of routes.
+
+```nim
+routes:
+  group "/admin" {.middleware: [adminAuthMiddleware].}:
+    get "/dashboard"
+      # This route will be accessible at "/admin/dashboard" and will execute the `adminAuthMiddleware` before the `getAdminDashboard` handler
+
+    get "/users"
+      # This route will be accessible at "/admin/users" and will also execute the `adminAuthMiddleware` before the `getAdminUsers` handler
+```
+
 
 ## Supported Route Parameters
 Supranim supports dynamic route parameters, which can be defined using curly braces `{}` in the route path. You can specify the parameter type using a colon `:` followed by the type name. For example, `{name:slug}` defines a route parameter named `name` of type `slug`.
@@ -80,49 +127,6 @@ v?[0-9]+(?:\.[0-9]+){1,3}(?:-[0-9A-Za-z.\-]+)?
 `any` matches any string.
 ```
 .+
-```
-
-<div class="alert alert-info rounded-4" role="alert">
-  <div class="alert-content">
-    Currently, Supranim does not support custom regex patterns for route parameters. However, we plan to add this feature in the future to allow for even more flexibility in defining route parameters.
-  </div>
-</div>
-
-### Route multiple Methods
-You can define a common route for multiple HTTP methods, for example when you want to have the same
-route for both `GET` and `POST` requests. To do this, simply use a tuple of methods in the route definition, just like this
-
-```nim
-routes:
-  (get, post) -> "/edit/{id:id}"
-    # This route autolinks to two handlers: `getEditId` and `postEditId`
-    # where `id` is a dynamic route parameter of type `id`
-    # which matches numeric strings (e.g., "123", "456")
-```
-
-### Middleware & Afterware
-In addition to defining routes, you can also use the `middleware` and `afterware` pragmas to specify functions that should be executed before or after the route handler, respectively. This allows you to easily manage tasks such as authentication, logging, or response modification in a clean and organized way.
-
-```nim
-routes:
-  get "/dashboard" {.middleware: [authMiddleware].}
-    # This route will execute the `authMiddleware` function before the `getDashboard` handler
-
-  get "/profile" {.afterware: [logAfterware].}
-    # This route will execute the `logAfterware` function after the `getProfile` handler
-```
-
-### Route Groups
-Supranim also supports route groups, which allow you to group related routes together under a common path prefix. This is useful for organizing your routes and applying common middleware or afterware to a group of routes.
-
-```nim
-routes:
-  group "/admin" {.middleware: [adminAuthMiddleware].}:
-    get "/dashboard"
-      # This route will be accessible at "/admin/dashboard" and will execute the `adminAuthMiddleware` before the `getAdminDashboard` handler
-
-    get "/users"
-      # This route will be accessible at "/admin/users" and will also execute the `adminAuthMiddleware` before the `getAdminUsers` handler
 ```
 
 ## Related

@@ -24,8 +24,23 @@ ctrl getHomepage:
   respond("Welcome to the homepage!")
 ```
 
-There are multiple ways of sending a response from a controller. The `respond` template is a convenient way to send a text or HTML response. You can also use the `json` template to send a JSON response.
+There are multiple ways of sending a response from a controller. The `respond` template is a convenient way to send a **text** or **HTML response**. You can also use the `json` template to send a **JSON response**. The `json` template can take any Nim type and convert to JSON (using `openparser/json` under the hood):
 
+```nim
+type
+  User = object
+    name: string
+
+ctrl getHomepage:
+  var user = User(name: "George Lemon")
+  json(user) # {"name": "George Lemon"}
+```
+
+
+## Controllers location
 Controllers are defined in the `src/controller` directory, and they are automatically loaded by the application.
 
-The identifier name of the controller is linked to the route path. For example, a controller named `getHomepage` will be linked to the route path `get "/"`, and a controller named `getUserProfile` will be linked to the route path `get "/user/profile"`. For more information on how routes are linked to controllers, please refer to the [Routing](/basics/routing) section.
+## Controller linking
+The ident name of a controller is always linked to its route path. For example, a controller named `getHomepage` will be linked to the route path `get "/"`, and a controller named `getUserProfile` will be linked to the route path `get "/user/profile"`.
+
+For more information on how routes are linked to controllers, please refer to the [Routing](/basics/routing) section.

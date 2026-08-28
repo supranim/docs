@@ -162,6 +162,9 @@ sidebar_navigation:
       - title: "Http Limiter"
         url: "/services/limiter"
 
+      - title: "Cache"
+        url: "/services/cache"
+
 extra_sections:
   left_sidebar:
     - content: |

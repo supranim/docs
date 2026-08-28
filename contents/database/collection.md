@@ -4,7 +4,7 @@ description: "Work with query results through the ozark Collection wrapper: leng
 keywords: ["data collection", "ozark", "database collection", "orm"]
 ---
 
-## What is Collection?
+## What is a Collection?
 `Collection[T]` is the type returned by the Ozark query builder for every `get`/`getAll` call. It wraps a sequence of model instances (`entries`) and provides helpers for inspecting and iterating the result set. `T` is the model type.
 
 ```nim
