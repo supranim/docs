@@ -4,7 +4,7 @@ description: "A full-stack web framework for Nim with routing, controllers, an O
 tags: ["introduction", "overview", "getting started"]
 ---
 
-This is Supranim &mdash; A full-stack web framework built on top of [powpow](https://github.com/openpeeps/powpow), a 100% Nim HTTP server, designed to provide a fast, modern, and flexible development experience
+This is Supranim, a full-stack web framework built on top of [powpow](https://github.com/openpeeps/powpow), **an event notification library supporting HTTP/1.1 and HTTP/2**, designed to provide a fast, modern, and flexible development experience
 for building web applications in Nim language.
 
 <div class="alert alert-info rounded-4" role="alert">

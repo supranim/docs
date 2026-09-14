@@ -6,11 +6,11 @@ description: "The Nim packages required by Supranim, and the runtime libraries n
 ### Nim packages and libraries
 Supranim relies on several Nim packages to provide its features. Most of them are maintained [@supranim](https://github.com/supranim/supranim) and [@openpeeps](https://github.com/openpeeps) organizations and are Nim-only:
 
+- **[kapsis](https://github.com/openpeeps/kapsis)**: CLI command parsing used by `App.cli`.
 - **[powpow](https://github.com/openpeeps/powpow)**: HTTP/1.1 and WebSocket server (the Supranim backend).
 - **[ozark](https://github.com/openpeeps/ozark)**: macro-based ORM with a type-safe query builder (PostgreSQL).
 - **[emitter](https://github.com/supranim/emitter)**: event emitter powering the events service.
 - **[nimcypher](https://github.com/nimbase/nimcypher)**: cryptography for `supranim/support/auth`: a pure-Nim port of Monocypher (X25519, Ed25519, XChaCha20-Poly1305, Argon2id).
-- **[kapsis](https://github.com/openpeeps/kapsis)**: CLI command parsing used by `App.cli`.
 - **[tim](https://github.com/openpeeps/tim)**: template engine.
 - **[boogie](https://github.com/openpeeps/boogie)**: WAL-based KV and RDBMS stores used by the Cache service.
 - Other utilities: `flysystem` (filesystem), `twofa` (QR/2FA), `openparser` (JSON/YAML/regex), `threading`, `flatty`, `jsony`, `mimedb`, `checksums`, `semver`.
