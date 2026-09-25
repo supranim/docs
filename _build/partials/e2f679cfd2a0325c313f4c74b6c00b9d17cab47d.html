@@ -1,0 +1,26 @@
+<p>Middleware is a powerful concept in web development that allows you to intercept and modify requests and responses in your application. In this section, we will explore how to use middleware in your application to enhance functionality and improve the user experience.</p><p><strong>Middleware files are located in the <code>src/service/middleware</code> directory, and they are automatically loaded by the application.</strong></p><h2 id="create-a-middleware"><a href="#create-a-middleware" class="anchor-link">🔗</a>Create a Middleware</h2><p>You can create a new middleware by using the <code>newMiddleware</code> macro. Inside the middleware use <code>next()</code> to continue to the next middleware or route handler, and <code>abort()</code> to stop the request and optionally redirect to another page.</p><p>Here is an example: </p><pre><code class="language-nim">import supranim/middleware
+
+newMiddleware authenticate:
+  withSession do:
+    let userData = req.getClientData()
+    if userSession.isAuthenticated():
+      next() # continue to the next middleware
+
+  # if the auth fails will redirect to login page
+  # using `abort` template (which also blocks code execution after call)
+  abort(&quot;/auth/login&quot;)
+
+  echo &quot;Hello, Joy!&quot; # so, this won't get printed!</code></pre><h3 id="attach-middleware-to-routes"><a href="#attach-middleware-to-routes" class="anchor-link">🔗</a>Attach Middleware to Routes</h3><p>To attach a middleware to a route, you can use a pragma expression. For example to attach the <code>authenticate</code> middleware to <code>/account</code> route: </p><pre><code class="language-nim">get &quot;/account&quot; {.middleware: [authenticate].}
+  # GET route links to `getAccount` controller
+  # and is protected by the `authenticate` middleware</code></pre><p>This will ensure that the <code>authenticate</code> middleware runs before the route handler for <code>/account</code>, allowing you to perform authentication checks or other logic before processing the request. Sure, you can attach multiple middleware to a route by listing them in the <code>middleware</code> pragma: </p><pre><code class="language-nim">get &quot;/account&quot; {.middleware: [authenticate, anotherMiddleware].}</code></pre><h2 id="base-middleware"><a href="#base-middleware" class="anchor-link">🔗</a>Base Middleware</h2><p>The <code>baseMiddleware</code> is a special middleware that runs before all other middleware and route handlers. It is useful for tasks that need to be performed on every request, such as logging, setting headers, or handling CORS.</p><p>One example is to implement a base middleware that checks for a trailing slash in the URI and redirects to the correct URL if necessary: </p><pre><code class="language-nim">import supranim/middleware
+
+newBaseMiddleware uriChecker:
+  ## Fix the trailing slash in the URI
+  let path = req.getUriPath
+  if path != &quot;/&quot; and path[^1] == '/':
+    res.addHeader(&quot;Location&quot;, path[0..^2])
+    req.resp(code = HttpCode(301), &quot;&quot;, res.getHeaders())</code></pre><p>In this example, the <code>uriChecker</code> middleware checks if the requested URI ends with a trailing slash (except for the root path "/"). If it does, it redirects the user to the same URI without the trailing slash using a 301 Moved Permanently response.</p><p><strong>Base middleware handlers are automatically</strong> added to each request, so you don't need to manually include them in your routes. They will run <strong>before any other middleware or route handlers</strong>, ensuring that the necessary checks or modifications are applied to every request.</p><div class="alert alert-info rounded-4" role="alert">
+  <div class="alert-content">
+    For performance reasons, avoid using Base Middleware for tasks that are not necessary on every request, as it will run for every incoming request to your application.
+  </div>
+</div>

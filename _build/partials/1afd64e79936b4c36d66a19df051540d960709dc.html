@@ -1,0 +1,145 @@
+<p>Service Providers are a powerful feature in Supranim that allows you to manage your application's services in a clean and organized way. They are responsible for <strong>registering services</strong>, and <strong>bootstrapping your application</strong>.</p><h2 id="types-of-service-providers"><a href="#types-of-service-providers" class="anchor-link">🔗</a>Types of Service Providers</h2><p>Supranim provides multiple types of service providers. A service provider can be registered as a <strong>Singleton</strong>, <strong>Global</strong>, <strong>ThreadService</strong>, <strong>ThreadPoolService</strong>, <strong>WebService</strong> or <strong>UnixService</strong> for standalone microservices and thread-based servers.</p><h3 id="singleton-service-provider"><a href="#singleton-service-provider" class="anchor-link">🔗</a>Singleton Service Provider</h3><p>A Singleton Service Provider is a service that is instantiated only once and shared across the entire application. It is useful for services that maintain state or need to be accessed globally, such as a database connection or a cache.</p><pre><code class="language-nim">import supranim/core/services
+
+initService Counter[Singleton]:
+  description = &quot;In-process hit counter&quot;
+  state do:
+    type Counter = object
+      hits: int
+  api do:
+    proc counter*(): ptr Counter =
+      ## Return the singleton instance, creating it on first use
+      getCounterInstance(
+        proc(instance: ptr Counter) =
+          {.gcsafe.}:
+            instance[] = Counter(hits: 0)
+      )
+
+    proc hit*() =
+      ## Record one hit
+      inc counter()[].hits
+
+    proc hits*(): int =
+      ## Total hits recorded
+      counter()[].hits</code></pre><h3 id="global-service-provider"><a href="#global-service-provider" class="anchor-link">🔗</a>Global Service Provider</h3><p>A Global Service Provider is a namespace-style service without an instance type: only the <code>state</code>/<code>api</code> blocks are emitted, with no <code>get&lt;Name&gt;Instance</code> accessor. It is useful for grouping pure functions and constants under a service name.</p><pre><code class="language-nim">import std/options
+import pkg/mimedb
+import supranim/core/services
+
+initService Mime[Global]:
+  description = &quot;Shared MIME lookup helpers&quot;
+  state do:
+    const DefaultMimeType = &quot;application/octet-stream&quot;
+  api do:
+    proc mimeType*(ext: string): string =
+      ## Return the MIME type for `ext`, falling back to a default
+      getMimeType(ext).get(DefaultMimeType)
+
+    proc isKnownExtension*(ext: string): bool =
+      ## True when `ext` exists in the MIME database
+      isExtension(ext)
+
+    proc isCompressibleType*(mimeType: string): bool =
+      ## True when `mimeType` is marked as compressible
+      isCompressible(getMimeInfo(mimeType))</code></pre><h3 id="threadservice-provider"><a href="#threadservice-provider" class="anchor-link">🔗</a>ThreadService Provider</h3><p>A ThreadService runs user code in its own thread for as long as it wants and talks to the main application through the application-owned <code>Chan[ServiceMsg]</code>. It cannot be built standalone. (<code>ChannelService</code> is a deprecated alias of <code>ThreadService</code>.)</p><pre><code class="language-nim">import std/strutils
+import supranim/application
+import supranim/core/services
+
+initService Worker[ThreadService]:
+  description = &quot;Uppercase worker thread&quot;
+  queueSize = 32
+  autoStart = false
+
+  thread do:
+    let ch = getWorkerChannel()
+    while true:
+      let msg = ch[].recv()
+      if isServiceStop(msg):
+        break
+      ch[].send(ServiceMsg(id: msg.id, action: &quot;done:&quot; &amp; msg.action,
+        payload: msg.payload.toUpperAscii()))
+
+  api do:
+    proc submit*(app: Application, action, payload: string,
+        id: int64 = 0): bool =
+      ## Queue one job for the worker. Returns false when the queue is full.
+      app.sendServiceMsg(&quot;Worker&quot;, action, payload, id)</code></pre><p>When <code>autoStart</code> is false, the service does not start on its own. Start and stop it with the generated <code>start&lt;Name&gt;Service</code> and <code>stop&lt;Name&gt;Service</code> procs:</p><pre><code class="language-nim"># generated function as `start&lt;ServiceName&gt;Service`
+app().startWorkerService()
+
+assert app().hasServiceChan(&quot;Worker&quot;)
+assert app().submit(&quot;upper&quot;, &quot;hello world&quot;, 1)
+
+let reply = app().recvServiceMsg(&quot;Worker&quot;)
+assert app().stopWorkerService()</code></pre><p>The string name (<code>&quot;Worker&quot;</code>) is only used for channel lookup and messaging (<code>hasServiceChan</code>, <code>sendServiceMsg</code>, <code>recvServiceMsg</code>). Starting itself uses the typed proc.</p><h3 id="threadpoolservice-provider"><a href="#threadpoolservice-provider" class="anchor-link">🔗</a>ThreadPoolService Provider</h3><p>A ThreadPoolService owns a <code>TaskManager</code> (see <a href="/services/tasks">Background Tasks & Queues</a>): N anonymous workers run submitted jobs while callbacks fire serialized on the pool dispatch thread, and a private scheduler thread drives delayed, repeating and wall-clock tasks. Jobs are submitted via the <code>api</code> handles, there is no worker body and no <code>routes</code>, <code>ws</code> or <code>thread do:</code> block. It cannot be built standalone.</p><pre><code class="language-nim">import supranim/application
+import supranim/core/services
+
+initService Jobs[ThreadPoolService]:
+  description = &quot;CPU-bound job pool example&quot;
+  poolSize = 2
+  autoStart = false
+
+  shared do:
+    type FibJob = object
+      n: int
+
+  api do:
+    proc fib(n: int): int =
+      ## Iterative Fibonacci, our CPU-bound demo job
+      var a = 0
+      var b = 1
+      for _ in 2..n:
+        let t = a + b
+        a = b
+        b = t
+      b
+
+    proc submitFib*(n: int, done: proc(res: int) {.closure.}): JobId =
+      ## Run `fib(n)` off the calling thread. Returns a `JobId` for
+      ## `cancelJob` (`JobId(0)` when the pool is down). `done` fires
+      ## on the pool dispatch thread when the result is ready.
+      getJobsPool().submit(
+        job = proc(): int {.closure.} = fib(n),
+        cb = done,
+        onError = proc(err: ref CatchableError) {.closure.} =
+          echo &quot;job failed: &quot;, err.msg)
+
+    proc cancelFib*(id: JobId): bool =
+      ## Drop a still-queued `fib` job: true means it will never run
+      ## (silent). A running or finished job returns false and
+      ## delivers normally.
+      getJobsPool().cancelJob(id)</code></pre><h3 id="webservice-provider"><a href="#webservice-provider" class="anchor-link">🔗</a>WebService Provider</h3><p>A WebService Provider is a standalone service that runs its own web server. It is useful for creating REST API microservices that need to run independently from the main application.</p><pre><code class="language-nim">import supranim/microservice
+
+initService Greeter[WebService]:
+  description = &quot;Hello microservice example&quot;
+  port = 8765
+
+  routes do:
+    get &quot;/hello&quot;:
+      req.respond(200, %*{&quot;message&quot;: &quot;hello from a standalone service&quot;})
+
+    get &quot;/hello/{name:slug}&quot;:
+      req.respond(200, %*{&quot;message&quot;: &quot;hello &quot; &amp; req.params[&quot;name&quot;]})</code></pre><p>A <code>WebService</code> can also run a standalone WebSocket server with a <code>ws do:</code> block instead of <code>routes do:</code>:</p><pre><code class="language-nim">import supranim/microservice
+
+initService Echo[WebService]:
+  description = &quot;WebSocket echo example&quot;
+  port = 8766
+
+  ws do:
+    wss.onOpen(proc(ws: WsConnection) {.closure.} =
+      echo &quot;ws client connected&quot;
+    )
+    wss.onMessage(proc(ws: WsConnection, kind: WsFrameKind,
+        data: openArray[byte]) {.closure.} =
+      if kind == wsText:
+        ws.sendText(&quot;echo: &quot; &amp; cast[string](data))
+    )
+    wss.onClose(proc(ws: WsConnection, code: int,
+        reason: string) {.closure.} =
+      echo &quot;ws client left: &quot;, code, &quot; &quot;, reason
+    )</code></pre><h3 id="unixservice-provider"><a href="#unixservice-provider" class="anchor-link">🔗</a>UnixService Provider</h3><p>A UnixService Provider is the same as a WebService Provider, but served over a Unix domain socket instead of TCP, which makes it ideal for fast local IPC. It supports <code>socketPath</code> and <code>socketMode</code> fields.</p><pre><code class="language-nim">import supranim/microservice
+
+initService LocalGreeter[UnixService]:
+  description = &quot;Local IPC microservice example&quot;
+  socketPath = &quot;/tmp/supranim_example.sock&quot;
+
+  routes do:
+    get &quot;/ping&quot;:
+      req.respond(200, %*{&quot;pong&quot;: true})</code></pre>

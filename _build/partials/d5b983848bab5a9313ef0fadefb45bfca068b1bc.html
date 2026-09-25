@@ -1,0 +1,75 @@
+<h2 id="about"><a href="#about" class="anchor-link">🔗</a>About</h2><p>Supranim has two job systems, and they solve different problems:</p><ul><li><strong>Tasks</strong> are ephemeral, in-process concurrency: fire-and-forget work, delayed and repeating timers, wall-clock schedules and cancellation. Nothing survives a restart. They run on a <code>TaskManager</code> owned by a <code>ThreadPoolService</code> provider.</li><li><strong>Queues</strong> are durable, async work: <code>dispatch*</code> stores a row in <code>queue_jobs</code>, a worker executes it later, with retries, backoff, delayed availability and a <code>failed_queue_jobs</code> table. Rows survive restarts and crashes.</li></ul><h3 id="example-usage"><a href="#example-usage" class="anchor-link">🔗</a>Example usage</h3><ul><li>Use tasks for <strong>cache refreshes</strong>, <strong>timeouts</strong>, <strong>heartbeats</strong> and "<em>run this at 09:00</em>".</li><li>Use queues for <strong>welcome emails</strong>, <strong>receipts</strong> and <strong>webhooks</strong>, anything that must not be lost on deploy.</li></ul><div class="alert alert-info rounded-4" role="alert">
+  <div class="alert-content">
+    The task engine is also available as a standalone Nimble package (`supranim_tasks`, framework-agnostic: only powpow plus the standard library) for any Nim project.
+  </div>
+</div><h2 id="the-pool-service"><a href="#the-pool-service" class="anchor-link">🔗</a>The pool service</h2><p>A <code>ThreadPoolService</code> provider owns a <code>TaskManager</code>: N worker threads plus a private scheduler thread. Define one outside the main module (pool services cannot be built standalone):</p><pre><code class="language-nim">import supranim/application
+import supranim/core/services
+
+initService Jobs[ThreadPoolService]:
+  description = &quot;CPU-bound job pool&quot;
+  poolSize = 2
+  autoStart = false
+
+  api do:
+    proc submitFib*(n: int, done: proc(res: int) {.closure.}): JobId =
+      getJobsPool().submit(
+        job = proc(): int {.closure.} = fib(n),
+        cb = done)</code></pre><p>The provider generates <code>getJobsPool(): TaskManager</code>, <code>startJobsService(app, poolSize = 4)</code>, <code>stopJobsService(app)</code>, plus <code>getJobsRawPool()</code> (the underlying powpow pool, rarely needed), <code>isJobsServiceRunning()</code> and <code>haltJobsService(app, delayMs)</code> — the only stop that is safe from inside a job or callback, since <code>stop</code> joins pool threads.</p><h2 id="immediate-delayed-and-repeating-tasks"><a href="#immediate-delayed-and-repeating-tasks" class="anchor-link">🔗</a>Immediate, delayed and repeating tasks</h2><pre><code class="language-nim">let app = appInstance()
+assert startJobsService(app)
+
+# Immediate: runs on a worker, callback fires serialized on the
+# pool dispatch thread (never on the caller thread).
+let id = getJobsPool().submit(
+  proc(): string = &quot;hello&quot;,
+  proc(res: string) = echo &quot;got: &quot;, res)
+
+# Cancel a still-queued job: true means it will never run (silent).
+# Running jobs cannot be preempted: false, and they deliver normally.
+if getJobsPool().cancelJob(id):
+  echo &quot;was still queued&quot;
+
+# Delayed one-shot and repeating interval timers.
+let once = getJobsPool().submitDelayed(500,
+  proc(): int = 40 + 2,
+  proc(res: int) = echo res)
+let every = getJobsPool().submitRepeating(1000,
+  proc(): int = tick(),
+  proc(res: int) = echo res, name = &quot;ticker&quot;)
+
+assert stopJobsService(app)</code></pre><p><code>submit</code> returns a <code>JobId</code> (<code>JobId(0)</code> means rejected: stopping or closed). Delayed and repeating tasks return a <code>TimerId</code> and accept an optional <code>name = &quot;...&quot;</code>.</p><h2 id="wall-clock-scheduling"><a href="#wall-clock-scheduling" class="anchor-link">🔗</a>Wall-clock scheduling</h2><p>Daily and weekly tasks chain one-shots recomputed from local time after every fire, so DST shifts land on one 23h/25h day instead of drifting:</p><pre><code class="language-nim">import std/times
+
+# Once at a DateTime (past times never fire: they stay tracked
+# as taskInactive, name reserved, no warning).
+getJobsPool().scheduleAt(
+  (getTime() + initDuration(seconds = 30)).local(),
+  proc(): int = 1, proc(res: int) = echo &quot;half a minute&quot;,
+  name = &quot;once&quot;)
+
+# Every day / week at a local wall-clock time.
+getJobsPool().scheduleDaily(9, 0, 0,
+  proc(): int = 1, proc(res: int) = echo &quot;morning&quot;,
+  name = &quot;digest&quot;)</code></pre><p>Inspect and stop timers by id or name. Cancelling keeps the name reserved (a duplicate name raises); removing frees it:</p><pre><code class="language-nim">getJobsPool().cancelTask(&quot;ticker&quot;)   # stops firing, name reserved
+getJobsPool().removeTask(&quot;ticker&quot;)   # cancels + frees the name
+assert getJobsPool().taskStatus(&quot;digest&quot;) == taskArmed
+assert getJobsPool().hasTask(&quot;digest&quot;)</code></pre><p><code>taskStatus</code> reports <code>taskArmed</code>, <code>taskCancelled</code>, <code>taskInactive</code> or <code>taskUnknown</code>. Timer control operations take effect at the next scheduler heartbeat (~10ms); <code>cancelJob</code> is synchronous. For chained daily/weekly tasks, prefer cancelling by name: a stale id still resolves to the live occurrence.</p><h2 id="queue-jobs"><a href="#queue-jobs" class="anchor-link">🔗</a>Queue jobs</h2><p>Define typed jobs with the <code>job</code> macro in <code>src/service/event/queue</code> (auto-discovered like event listeners). This generates a <code>&lt;Name&gt;Payload</code> object, a typed <code>handle&lt;Name&gt;</code> proc, a <code>dispatch&lt;Name&gt;</code> proc that inserts a row, and a <code>QueueRegistry</code> entry for the worker:</p><pre><code class="language-nim">import pkg/ozark/driver/sqlite
+import pkg/supranim/queue/model
+import pkg/supranim/service/queue
+
+job SendWelcomeEmail:
+  queue = &quot;emails&quot;
+  tries = 3
+  backoff = 60
+  timeout = 120
+
+  payload:
+    userId: int
+    email: string
+
+  handle(payload):
+    Mailer.sendWelcome(payload.userId, payload.email)</code></pre><p>Dispatch from anywhere (it owns its <code>withDBPool</code> — never call it from inside another pool block). <code>delay</code> postpones availability in seconds, <code>onQueue</code> overrides the queue:</p><pre><code class="language-nim">dispatchSendWelcomeEmail(SendWelcomeEmailPayload(userId: 7, email: &quot;a@b.c&quot;))
+dispatchSendWelcomeEmail(SendWelcomeEmailPayload(userId: 8, email: &quot;d@e.f&quot;), delay = 3600)</code></pre><p>Run the worker on any <code>TaskManager</code> with the <code>service/queue_work</code> bridge. It polls <code>queue_jobs</code> every <code>intervalMs</code>, claims up to <code>batch</code> due rows (<code>available_at &lt;= now</code>, ordered by <code>priority, available_at</code>), and runs each <code>handle</code> on the pool dispatch thread:</p><pre><code class="language-nim">import pkg/supranim/service/queue_work
+
+startQueueWorker(getJobsPool(), queueName = &quot;emails&quot;,
+  intervalMs = 1000, batch = 5)
+# ...
+stopQueueWorker(getJobsPool())</code></pre><p>Settling is per row: success deletes it, failure re-queues it (<code>now + backoff</code>, attempts bumped) until <code>tries</code> runs out, then moves it to <code>failed_queue_jobs</code>. Unknown job names fail the row instead of crashing. Delivery is at-least-once with a read-only claim: keep one worker per queue and <code>intervalMs</code> comfortably above handle time. On SQLite, open the database in WAL mode so the polling reads never block the settling writes.</p><h2 id="threading-and-lifecycle-rules"><a href="#threading-and-lifecycle-rules" class="anchor-link">🔗</a>Threading and lifecycle rules</h2><ul><li>Lock shared state inside <code>cb</code>/<code>onError</code>/<code>handle</code> — they run on the pool dispatch thread, never on the caller thread. Never touch a request object there.</li><li>Job closures must not capture <code>ref</code> objects across threads (values, strings, locks, atomics and raw pointers only).</li><li><code>stop</code> drains queued jobs gracefully, <code>shutdown</code> discards them; both block and must run outside pool jobs and callbacks — from inside one, call <code>halt</code> instead. <code>close</code> finishes teardown on the creating thread and is idempotent.</li></ul><h2 id="standalone-usage"><a href="#standalone-usage" class="anchor-link">🔗</a>Standalone usage</h2><p>Use <code>supranim_tasks</code> directly in any Nim project (<code>requires &quot;supranim_tasks &gt;= 0.2.0&quot;</code>, Nim 2.2.10+, threads on). The README of the <a href="https://github.com/supranim/tasks">tasks package</a> documents the full API with runnable examples.</p><h3 id="api-reference"><a href="#api-reference" class="anchor-link">🔗</a>API Reference</h3><p>The API reference for the tasks engine: <a href="https://supranim.github.io/tasks">https://supranim.github.io/tasks</a></p><h2 id="related"><a href="#related" class="anchor-link">🔗</a>Related</h2><div class="post-ref"><a class="post-ref__link" href="/services/events"><div class="post-ref__body"><h3 class="post-ref__title">Event Emitter</h3><p class="post-ref__excerpt">Supranim&#39;s Event Emitter for handling custom events and listeners within the application.</p></div></a></div><div class="post-ref"><a class="post-ref__link" href="/database/queries"><div class="post-ref__body"><h3 class="post-ref__title">Query builder</h3><p class="post-ref__excerpt">Use the Ozark query builder to insert, select, filter, update and delete rows with compile-time checked SQL.</p></div></a></div>
