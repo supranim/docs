@@ -20,7 +20,7 @@ var server = newWebServer()
 proc onRequest(req: var webserver.Request) =
   req.send(Http200, "All cheese is good cheese")
 
-server.start(onRequest, startupCallback = nil, threads = 2)
+server.start(onRequest, startupCallback = nil, threads = 2) # default 8080
 ```
 
 The `Request` type exposes `send(code, body)`, `sendFile`, `sendChunk` and streaming helpers for low-level responses.
@@ -40,23 +40,24 @@ proc helloHandler(req: var Request, res: var Response) {.nimcall, gcsafe.} =
 proc usersHandler(req: var Request, res: var Response) {.nimcall, gcsafe.} =
   res.setBody("id=" & req.routeParams.getOrDefault("id"))
 
-var router = newHttpRouter()
-router.registerRoute("/hello", HttpGet, helloHandler)
-router.registerRoute("/users/{id:id}", HttpGet, usersHandler)
+var appRouter = newHttpRouter()
+appRouter.registerRoute("/hello", HttpGet, helloHandler)
+appRouter.registerRoute("/users/{id:id}", HttpGet, usersHandler)
 
-proc onRequest(req: var Request) {.gcsafe.} =
-  var res = Response(headers: newHttpHeaders())
-  let rc = router.checkExists(req.getUriPath(), req.getHttpMethod())
-  if rc.exists:
-    req.routeParams = rc.params
-    rc.route.callback(req, res)
-    if not req.responseSent:
-      req.resp(res.getCode(), res.getBody(), res.getHeaders())
-  else:
-    req.resp(Http404, "not found")
+proc onRequest(req: var Request) =
+  {.gcsafe.}:
+    var res = Response(headers: newHttpHeaders())
+    let rc = appRouter.checkExists(req.getUriPath(), req.getHttpMethod())
+    if rc.exists:
+      req.routeParams = rc.params
+      rc.route.callback(req, res)
+      if not req.responseSent:
+        req.resp(res.getCode(), res.getBody(), res.getHeaders())
+    else:
+      req.resp(Http404, "not found")
 
 var server = newWebServer()
-server.start(onRequest)
+server.start(onRequest) # default 8080
 ```
 
 Each handler uses the `proc(req: var Request, res: var Response) {.nimcall, gcsafe.}` signature. Use `registerRoute` with `middlewares = @[...]` or `afterwares = @[...]` when needed, and resolve them with `resolveMiddleware` and `resolveAfterware` before and after the callback.

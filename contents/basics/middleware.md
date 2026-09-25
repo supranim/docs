@@ -5,7 +5,7 @@ description: "Add middleware to your application to handle requests and response
 
 Middleware is a powerful concept in web development that allows you to intercept and modify requests and responses in your application. In this section, we will explore how to use middleware in your application to enhance functionality and improve the user experience.
 
-Middleware files are located in the `src/service/middleware` directory, and they are automatically loaded by the application.
+**Middleware files are located in the `src/service/middleware` directory, and they are automatically loaded by the application.**
 
 ## Create a Middleware
 You can create a new middleware by using the `newMiddleware` macro. Inside the middleware use `next()` to continue to the next middleware or route handler, and `abort()` to stop the request and optionally redirect to another page.
@@ -14,14 +14,17 @@ Here is an example:
 ```nim
 import supranim/middleware
 
-var isAuthenticated = false
 newMiddleware authenticate:
-  # some authentication logic here, if successful, call
-  next()
+  withSession do:
+    let userData = req.getClientData()
+    if userSession.isAuthenticated():
+      next() # continue to the next middleware
 
-  # if the auth fails
-  # redirect to login page if authentication fails
+  # if the auth fails will redirect to login page
+  # using `abort` template (which also blocks code execution after call)
   abort("/auth/login")
+
+  echo "Hello, Joy!" # so, this won't get printed!
 ```
 
 ### Attach Middleware to Routes

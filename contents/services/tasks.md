@@ -1,16 +1,18 @@
 ---
 title: "Background Tasks & Queues"
-description: "Run ephemeral background tasks on a ThreadPoolService TaskManager, and durable Laravel-like queue jobs with retries, backoff and a failed-jobs table."
+description: "Run ephemeral background tasks on a ThreadPoolService TaskManager, and durable queue jobs with retries, backoff and a failed-jobs table."
 keywords: ["background tasks", "task scheduler", "job queue", "cron jobs", "scheduled tasks", "queue worker"]
 ---
 
 ## About
-Supranim has two job systems, and they solve different problems. Keep both:
+Supranim has two job systems, and they solve different problems:
 
 - **Tasks** are ephemeral, in-process concurrency: fire-and-forget work, delayed and repeating timers, wall-clock schedules and cancellation. Nothing survives a restart. They run on a `TaskManager` owned by a `ThreadPoolService` provider.
-- **Queues** are durable, Laravel-like async work: `dispatch*` stores a row in `queue_jobs`, a worker executes it later, with retries, backoff, delayed availability and a `failed_queue_jobs` table. Rows survive restarts and crashes.
+- **Queues** are durable, async work: `dispatch*` stores a row in `queue_jobs`, a worker executes it later, with retries, backoff, delayed availability and a `failed_queue_jobs` table. Rows survive restarts and crashes.
 
-Use tasks for cache refreshes, timeouts, heartbeats and "run this at 09:00". Use queues for welcome emails, receipts and webhooks — anything that must not be lost on deploy.
+### Example usage
+- Use tasks for **cache refreshes**, **timeouts**, **heartbeats** and "_run this at 09:00_". 
+- Use queues for **welcome emails**, **receipts** and **webhooks**, anything that must not be lost on deploy.
 
 <div class="alert alert-info rounded-4" role="alert">
   <div class="alert-content">
@@ -77,13 +79,13 @@ import std/times
 
 # Once at a DateTime (past times never fire: they stay tracked
 # as taskInactive, name reserved, no warning).
-discard getJobsPool().scheduleAt(
+getJobsPool().scheduleAt(
   (getTime() + initDuration(seconds = 30)).local(),
   proc(): int = 1, proc(res: int) = echo "half a minute",
   name = "once")
 
 # Every day / week at a local wall-clock time.
-discard getJobsPool().scheduleDaily(9, 0, 0,
+getJobsPool().scheduleDaily(9, 0, 0,
   proc(): int = 1, proc(res: int) = echo "morning",
   name = "digest")
 ```

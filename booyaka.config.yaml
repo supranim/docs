@@ -1,5 +1,5 @@
 metadata:
-  logo: "/assets/supranim.png"
+  logo: "/assets/logo.png"
   title: "Supranim Documentation"
   description: "Documentation for Supranim, the modern Web framework for building web applications with Nim lang"
   keywords: ["supranim", "nim", "web framework", "documentation", "framework", "booyaka docs"]
@@ -71,10 +71,10 @@ content:
 navbar:
   - title: "Home"
     url: "/"
-    icon: ""
+  - title: "API Reference"
+    url: "https://supranim.github.io/supranim"
   - title: "Check it out on GitHub"
     url: "https://github.com/supranim/supranim"
-    icon: "github"
 
 sidebar_navigation:
   - name: "Getting Started"
