@@ -48,7 +48,7 @@ Supranim relies on several Nim packages to provide its features. Most of them ar
 - **[nimcypher](https://github.com/nimbase/nimcypher)**: cryptography for `supranim/support/auth`: a pure-Nim port of Monocypher (X25519, Ed25519, XChaCha20-Poly1305, Argon2id).
 - **[tim](https://github.com/openpeeps/tim)**: template engine.
 - **[boogie](https://github.com/openpeeps/boogie)**: WAL-based KV and RDBMS stores used by the Cache service.
-- Other utilities: `flysystem` (filesystem), `twofa` (QR/2FA), `openparser` (JSON/YAML/regex), `threading`, `flatty`, `jsony`, `mimedb`, `checksums`, `semver`.
+- Other utilities: `flysystem` (filesystem), `twofa` (QR/2FA), `openparser` (JSON/YAML/regex), `threading`, `mimedb`, `checksums`, `semver`.
 
 For the complete list, see the [Nimble file](https://github.com/supranim/supranim) in the Supranim repository. Depending on the project type you choose when creating a new project, some additional dependencies may be required. 🔥 [Check the Starter Kits documentation](/starter-kits) for more details on the specific dependencies for each project type.
 
