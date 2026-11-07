@@ -3,7 +3,7 @@
    page is styled even before JS resolves the theme. Light overrides flip
    per `html[data-bs-theme="light"]` (set from `appearance.default_theme`,
    persisted choice, or the OS preference).
-   Code blocks (`pre`/`hljs`) intentionally stay dark in both themes.
+   Code blocks (`pre`, see `sweetsyntax.css`) intentionally stay dark in both themes.
    ========================================================================== */
 :root,
 html[data-bs-theme="dark"] {
@@ -611,20 +611,8 @@ mark {
   right: var(--booyaka-space-4);
 }
 
-/* hljs */
-pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{background:#222;color:#fff}.hljs-comment,.hljs-quote{color:#777}.hljs-built_in,.hljs-bullet,.hljs-deletion,.hljs-link,.hljs-literal,.hljs-meta,.hljs-number,.hljs-params,.hljs-regexp,.hljs-symbol,.hljs-tag,.hljs-template-variable,.hljs-variable{color:#ab875d}.hljs-attribute,.hljs-name,.hljs-section,.hljs-selector-class,.hljs-selector-id,.hljs-title,.hljs-type{color:#9b869b}.hljs-addition,.hljs-keyword,.hljs-selector-tag,.hljs-string{color:#ff6868}.hljs-emphasis{font-style:italic}.hljs-strong{font-weight:700}
-pre code.language-nim.hljs .hljs-punctuation {
-  color: #78b0e8;
-}
-
-pre code.language-nim.hljs .hljs-function-call {
-  color: #79bcff;
-}
-
-
-pre code.language-nim.hljs .hljs-echo-keyword {
-  color: #ff6868;
-}
+/* Backend code highlighting lives in `sweetsyntax.css`
+   (SweetSyntax token classes). Code blocks stay dark islands. */
 
 
 /* Page reference card (@<page>.md) */

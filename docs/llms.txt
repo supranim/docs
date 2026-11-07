@@ -25,21 +25,23 @@ Supranim is designed to be fast, modern and simple to use. Routes are defined in
 - [Routing](https://docs.supranim.com/basics/routing): Define routes and route parameters (`id`, `slug`, `uuid`, `semver`, ...), multi-method routes, route groups, middleware and afterware.
 - [Middleware](https://docs.supranim.com/basics/middleware): `newMiddleware` / `newBaseMiddleware`, `next()` and `abort()`.
 - [Controllers](https://docs.supranim.com/basics/controller): `newController` / `ctrl`, responding with `respond` or `json`.
-- [Templates](https://docs.supranim.com/basics/templates): Rendering HTML views with the Tim template engine (layouts, partials, views).
-- [Validation](https://docs.supranim.com/basics/validation): Input validation with `pkg/bag`.
+- [Templates](https://docs.supranim.com/basics/templates): Rendering HTML views with the Tim template engine (layouts, partials, views), plus dependency-free core view helpers.
+- [Static Files](https://docs.supranim.com/basics/static-files): Serve static assets with traversal protection, ETags, conditional requests and byte ranges.
+- [Validation](https://docs.supranim.com/basics/validation): Input validation with the core `support/validate` rules, plus `pkg/bag` and `pkg/valido` for advanced cases.
 - [Backends](https://docs.supranim.com/basics/backends): The powpow HTTP/WebSocket backend.
+- [WebSockets](https://docs.supranim.com/basics/websockets): Real-time communication with rooms, broadcast and session-aware upgrades.
 - [Other Setups](https://docs.supranim.com/basics/other-setups): Low-level HTTP and WebSocket server APIs.
 
 ## Database (Ozark ORM)
 
-- [Models](https://docs.supranim.com/database/models): Define models with `newModel` and auto-loaded tables.
+- [Models](https://docs.supranim.com/database/models): Define models with `newModel` and auto-loaded tables. PostgreSQL, MySQL and SQLite drivers with env-based setup.
 - [Query Builder](https://docs.supranim.com/database/queries): Compile-time checked SQL: insert, select, where (with `whereLike`, `whereIn`, `orWhere`), `orderDescBy`, `limit`, update, delete and raw SQL.
 - [Collection](https://docs.supranim.com/database/collection): Work with query results (`isEmpty`, `len`, `get`, iteration).
-- [Migrations](https://docs.supranim.com/database/migrations): Current state and plan for a built-in migration system.
+- [Migrations](https://docs.supranim.com/database/migrations): Version your schema with Ozark migrations (`newMigration`, `migrate`, `rollback`).
 
 ## Service Providers
 
-- [Sessions](https://docs.supranim.com/services/session): User sessions with the `supranim_session` package, `withSession`, auth middleware.
+- [Sessions](https://docs.supranim.com/services/session): User sessions with the `supranim_session` package, `withSession`, auth middleware. Core ships a lightweight in-memory alternative (`support/session`).
 - [Tasks](https://docs.supranim.com/services/tasks): Ephemeral background tasks on a ThreadPoolService TaskManager, wall-clock scheduling, and durable queue jobs with a worker bridge.
 - [Events & Listeners](https://docs.supranim.com/services/events): Register listeners in `src/service/event/listeners/`, emit events with `event().emit(...)`.
 - [Http Limiter](https://docs.supranim.com/services/limiter): Rate-limit HTTP requests.
