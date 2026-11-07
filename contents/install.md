@@ -16,7 +16,7 @@ Both flows below install the latest version of the **Supranim** framework and **
 
 ## Installing with Nimble
 
-```bash
+```yaml
 nimble install supra supranim
 ```
 

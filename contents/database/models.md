@@ -31,6 +31,25 @@ ctrl getUsers:
     let users = Models.table(User).selectAll().where("name", "John").getAll()
 ```
 
+## Drivers: PostgreSQL, MySQL and SQLite
+`supranim/model` is a facade over the Ozark ORM — `import supranim/model` gives you `newModel` plus the query, collection and migration layers. Pick one driver per binary:
+
+```
+import ozark/driver/psql   # PostgreSQL, default
+import ozark/driver/mysql  # MySQL / MariaDB
+import ozark/driver/sqlite # SQLite, file-based, no server
+```
+
+Or let `supranim/model/database` pick it from the build define (`-d:supraDBMainSqlite`, `-d:supraDBMainMysql`, else postgres) and initialize from the environment:
+
+```
+import supranim/model/database
+
+initDatabaseFromEnv()  # poolSize = 10 by default
+```
+
+Recognized variables: `DB_TYPE` (`sqlite` | `postgres` with `postgresql`/`pgsql`/`pg` aliases | `mysql` with `mariadb`/`my` aliases), `DB_HOST` (default `localhost`), `DB_PORT` (defaults `5432` / `3306`), `DB_NAME`, `DB_USER`, `DB_PASS` and `DB_FILE` (sqlite path, `DB_NAME` alias, default `app.db`). A `DB_TYPE` that disagrees with the compiled driver raises `DbConfigError` instead of generating SQL for the wrong backend.
+
 ## Next
 @database/queries.md
 

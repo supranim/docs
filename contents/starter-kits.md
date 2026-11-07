@@ -7,7 +7,7 @@ description: "Pre-built Supranim project templates with authentication, session 
 Starter kits are pre-built project templates that provide a solid foundation for building web applications with Supranim. They include **essential features**, **configurations**, and best practices to help you get started **quickly and efficiently**.
 
 ## Homemade Starter Kit v0.1.0
-Or first starter kit, designed to provide a solid foundation for building web applications with **Supranim**. It includes essential features such as **user authentication**, **session management**, and a **simple dashboard** to get you started quickly.
+The first starter kit, designed to provide a solid foundation for building web applications with **Supranim**. It includes essential features such as **user authentication**, **session management**, and a **simple dashboard** to get you started quickly.
 
 The StarterKit is perfect for developers who want to jump right into building their applications without worrying about the initial setup.
 

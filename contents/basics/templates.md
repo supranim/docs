@@ -7,6 +7,21 @@ tags: ["templates", "views", "rendering", "tim", "template engine"]
 ## Introduction to Templates
 Templates are a crucial part of any web application, allowing you to render dynamic HTML views based on your application's data. In Supranim, we use the [Tim template engine](https://github.com/openpeeps/tim) as a Supranim service to handle all template rendering.
 
+## Small HTML without Tim
+Core ships dependency-free view helpers in `supranim/support/view` for error pages and small responses — no engine setup required:
+
+```nim
+import supranim/support/view
+
+# {{key}} is HTML-escaped, {{{key}}} is raw, unknown keys become ""
+let body = renderTemplate("Hi {{name}}!", [("name", name)])
+
+# full HTML5 document with an escaped title
+respondPage("Hello", "<h1>Hi</h1>")
+```
+
+`escapeHtml`, `layout(title, bodyHtml, headExtra)` and `renderPage` compose pages manually; `respondPage(title, bodyHtml, code = Http200)` prepares the `text/html` response and blocks, mirroring the `json`/`respond` templates.
+
 ## About Tim Engine
 Tim is a simple and efficient DSL (Domain Specific Language) for creating templates. It provides a clean syntax for embedding dynamic data into your HTML views, making it easy to create reusable and maintainable templates. **There is a Booyaka documentation site dedicated to Tim**, which you can find it here https://tim.openpeeps.dev
 

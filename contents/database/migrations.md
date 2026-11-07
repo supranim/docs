@@ -1,14 +1,39 @@
 ---
 title: "Database Migrations"
-description: "The current state of database migrations in Supranim and the plan for a built-in migration system."
+description: "Version your database schema with Ozark migrations, re-exported through supranim/model."
 keywords: ["database migrations", "ozark", "schema updates", "orm"]
 ---
 
-Currently, Supranim does not have a built-in migration system. However, you can use the Ozark ORM to manage your database schema and keep it in sync with your models.
+Supranim re-exports the Ozark migration system through `supranim/model`, so it works with all three drivers (PostgreSQL, MySQL, SQLite). Migrations are Nim sources compiled as shared libraries and loaded at runtime from a folder. Bodies reuse the normal Ozark DSL with full compile-time validation.
 
-## The plan
-There are plans to implement a migration system as part of the Supra CLI in the future. Basically, migrations will be compiled as shared libraries, and the CLI will be able to load and execute these libraries to apply or revert schema changes to the database.
+## Writing a migration
+Create one file per migration (ordered by the version in the filename) that imports your models:
 
-This approach allows for a flexible and powerful migration system without losing the benefits of compile-time safety.
+```nim
+# migrations/add_users_20260915120000.nim
+import app/models
+import ozark/migration
 
-When executing a migration, the CLI will set the environment of the webserver to a special "migration mode", which will allow the migration code to run while the webserver is running in read-only mode, preventing any changes to the database from the webserver while the migration is running. This ensures that the database schema is updated safely without any conflicts or issues.
+newMigration addUsers:
+  ## Add users table with unique email
+  up do:
+    Models.table(Users).prepareTable().exec()
+  down do:
+    Models.table(Users).dropTable().exec()
+```
+
+## Applying migrations
+On the host, import a driver and run them inside a pooled connection. Applied migrations are tracked in the `ozark_migrations` table (`compiledAt`/`runAt`):
+
+```nim
+import ozark/driver/sqlite # or psql / mysql
+import ozark/migration
+
+initOzarkDatabase("app.db")
+withDBPool do:
+  migrate("migrations")        # apply pending, ordered by filename version
+  # rollback("migrations", 1)  # revert the last applied migration
+  # for s in migrationStatus("migrations"): echo s.info.version, " ", s.applied
+```
+
+Migration bodies never touch a connection directly: `up`/`down` are expanded per driver and captured as SQL plus bound parameters, then the host executes them inside its own pooled transaction.

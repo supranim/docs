@@ -30,6 +30,9 @@ nimble install supranim_session
 ## Access the Session Manager
 The Session Manager is an `HttpSession` singleton, auto-discovered from `src/service/provider/`. You access it through the `session()` helper or, inside controllers and middleware, the `withSession` template. The starter kits install and wire it up for you.
 
+### Lightweight core alternative
+If you don't need database persistence (users table, remember-me, 2FA), core ships a process-local session store in `supranim/support/session` with the same shape: sessions with expiry, per-session CSRF tokens and flash notifications, plus `withSession` templates and `initSessionWithHeaders` / `destroySessionWithHeaders` cookie helpers. Password hashing (`hashPassword` / `verifyPassword`, Argon2id) and session ids come from `supranim/support/auth`. Use the service above when sessions must survive restarts or span processes.
+
 ## Session flows
 The Session Manager provides a `withSession` template that you can use to wrap your logic that requires session handling. This template will automatically handle
 session creation, validation, and cleanup for you.
