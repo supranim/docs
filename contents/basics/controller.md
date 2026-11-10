@@ -13,14 +13,15 @@ newController getHomepage:
   respond("Welcome to the homepage!")
 ```
 
-Basically, the `newController` macro will transform into the following proc
+or, if you prefer the short version 👇
+```nim
+ctrl getHomepage:
+  respond("Welcome to the homepage!")
+```
+
+Basically, the `newController` macro or `ctrl` will transform into the following proc
 ```nim
 proc getHomepage(req: var Request, res: var Response) {.gcsafe.} =
-  respond("Welcome to the homepage!")
-
-# or, if you prefer the short version 👇
-
-ctrl getHomepage:
   respond("Welcome to the homepage!")
 ```
 
@@ -32,8 +33,19 @@ type
     name: string
 
 ctrl getHomepage:
-  var user = User(name: "George Lemon")
-  json(user) # {"name": "George Lemon"}
+  json(User(name: "George Lemon")) # {"name":"George Lemon"}
+```
+
+Full response:
+```text
+HTTP/1.1 200 OK
+Date: Tue, 10 Nov 2026 18:43:14 GMT
+Content-Length: 23
+Connection: close
+date: Tue, 10 Nov 2026 18:43:15 GMT
+content-type: application/json; charset=utf-8
+
+{"name":"George Lemon"}
 ```
 
 

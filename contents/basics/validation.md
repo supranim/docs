@@ -36,7 +36,7 @@ Available rules: `required`, `email`, `minLen`, `maxLen`, `equalsField`, `strong
 Find more about this package on its [GitHub repository](https://github.com/openpeeps/bag), or read the [API reference](https://openpeeps.github.io/bag)
 
 ### Example Usage
-Here is an example of how to use `pkg/bag` for validating input data in a Supranim controller:
+Here is an example of how to use `pkg/bag` for validating input data in a Supranim controller. 
 
 ```nim
 import pkg/supranim/controller
@@ -45,7 +45,7 @@ import pkg/bag
 ctrl postAuthLogin:
   ## `POST` handler for user login
   withDBPool:
-    withBag req.get:
+    withBag req.getFields:
       email: tEmail"auth.error.email"
       password: tPasswordStrength"weak.password"
       message: tTextarea"msg.empty":

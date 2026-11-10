@@ -80,42 +80,42 @@ Supranim supports dynamic route parameters, which can be defined using curly bra
 Supported parameter types include: 
 
 `id` matches numeric strings.
-```
+```regex
 [0-9]+
 ```
 
 `slug` matches URL-friendly strings.
-```
+```regex
 [0-9A-Za-z-_]+
 ```
 
 `anySlug` matches any string, including `/` characters.
-```
+```regex
 [0-9A-Za-z-_/]+
 ```
 
 `alphaSlug` matches alphabetic characters, hyphens and underscores.
-```
+```regex
 [A-Za-z-_]+
 ```
 
 `uuid` matches UUID strings.
-```
+```regex
 [0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}
 ```
 
 `hex` matches hexadecimal strings.
-```
+```regex
 [0-9a-fA-F]+
 ```
 
 `word` matches one word characters.
-```
+```regex
 \w+
 ```
 
 `wordWithDots` matches word characters and dots.
-```
+```regex
 [\w\.]+
 ```
 
@@ -125,7 +125,7 @@ v?[0-9]+(?:\.[0-9]+){1,3}(?:-[0-9A-Za-z.\-]+)?
 ```
 
 `any` matches any string.
-```
+```regex
 .+
 ```
 

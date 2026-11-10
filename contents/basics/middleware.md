@@ -14,11 +14,12 @@ Here is an example:
 ```nim
 import supranim/middleware
 
-newMiddleware authenticate:
+newMiddleware userAuth:
+  ## Use `newMiddleware` if you wanna be cool!
   withSession do:
-    let userData = req.getClientData()
     if userSession.isAuthenticated():
-      next() # continue to the next middleware
+      # continue to the next middleware with default 204 HttpCode
+      next(status = Http204)
 
   # if the auth fails will redirect to login page
   # using `abort` template (which also blocks code execution after call)
@@ -27,17 +28,23 @@ newMiddleware authenticate:
   echo "Hello, Joy!" # so, this won't get printed!
 ```
 
-### Attach Middleware to Routes
-To attach a middleware to a route, you can use a pragma expression. For example to attach the `authenticate` middleware to `/account` route:
+Or, define a middleware in the classic way!
 ```nim
-get "/account" {.middleware: [authenticate].}
-  # GET route links to `getAccount` controller
-  # and is protected by the `authenticate` middleware
+proc userAuth*(req: var Request, res: var Response): HttpCode =
+  ## Middlware for checking if user is authenticated.. duh!
 ```
 
-This will ensure that the `authenticate` middleware runs before the route handler for `/account`, allowing you to perform authentication checks or other logic before processing the request. Sure, you can attach multiple middleware to a route by listing them in the `middleware` pragma:
+### Attach Middleware to Routes
+To attach a middleware to a route, you can use a pragma expression. For example to attach the `userAuth` middleware to `/account` route:
 ```nim
-get "/account" {.middleware: [authenticate, anotherMiddleware].}
+get "/account" {.middleware: [userAuth].}
+  # GET route links to `getAccount` controller
+  # and is protected by the `userAuth` middleware
+```
+
+This will ensure that the `userAuth` middleware runs before the route handler for `/account`, allowing you to perform authentication checks or other logic before processing the request. Sure, you can attach multiple middleware to a route by listing them in the `middleware` pragma:
+```nim
+get "/account" {.middleware: [userAuth, userRoleModerator].}
 ```
 
 ## Base Middleware

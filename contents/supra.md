@@ -10,12 +10,17 @@ new projects from starter kits and bundle static assets. This is pretty much the
 ## Installation
 Usually, Supra CLI is automatically installed when you install Supranim for the first time. However, if you need to install it, you can always do it using Nimble:
 
-```
+```bash
 nimble install supra
 ```
 
-Or, directly from GitHub using the following command:
+If you prefer a faster alternative try [Clue package manager](https://github.com/openpeeps/clue), developed by [OpenPeeps](https://openpeeps.dev) (Note: `--build` will actually build the package, without it will just install it as a library)
+```bash
+clue install supra --build
 ```
+
+Or, directly from GitHub using the following command:
+```bash
 nimble install https://github.com/supranim/supra
 ```
 
