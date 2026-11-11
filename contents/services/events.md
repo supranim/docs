@@ -14,12 +14,12 @@ Listeners can be registered for specific events, and when an event is emitted, a
 ## Getting Started
 Install the [Event Emitter](https://github.com/supranim/emitter) service by importing it into your Supranim application via Nimble, then add it to your `.nimble` file:
 
-```
-requires "emitter[powpow]"
+```bash
+requires "emitter"
 ```
 
 Once installed, you can tell Supranim to initialize the autoloaded service in your application entry point, inside the `services` block:
-```
+```bash
 App.services do:
   # Initialize the Event Emitter service
   events.init()

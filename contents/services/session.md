@@ -23,8 +23,12 @@ The Session Manager is responsible for handling user sessions, including creatio
 
 ## Install this service
 Install the Session Manager service using Nimble:
-```
+```bash
 nimble install supranim_session
+```
+
+```bash
+clue install supranim_session
 ```
 
 ## Access the Session Manager

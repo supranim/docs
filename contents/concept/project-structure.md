@@ -9,7 +9,7 @@ The project structure of Supranim is organized to provide a clear and intuitive 
 ## The structure tree
 Here's a simple representation of the Supranim project structure:
 
-```
+```text
 src/
 ├── app.nim
 ├── routes.nim

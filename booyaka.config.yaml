@@ -155,6 +155,8 @@ sidebar_navigation:
   
   - name: "Service Providers"
     items:
+      - title: "Static Assets"
+        url: "/services/assets"
       - title: "Sessions"
         url: "/services/session"
 
